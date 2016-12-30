@@ -92,7 +92,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 
 	INSERT INTO TEST(USERNAME,PASSWORD,AGE) VALUES('zhangsan','123456',21);
 
-2,JSONDB.delete
+2,JSONDB.remove
 
 1
 
@@ -281,7 +281,7 @@ JSON格式
 
 ####查询操作
 
-根据主键查询数据
+1,根据主键查询数据
 
 JSON格式
 
@@ -316,6 +316,102 @@ JSON格式
 			"age":18,
 			"username":"zhangsan"
 		}
+	}
+	
+2,根据其它条件查询数据
+
+JSON格式
+
+	{
+	    "test":{
+	           "$columns":["id","username"],
+	           "age":{"$between":[25,30]},
+	           "username":{"$NIN":["lisi"]},
+	           "$sort":{"username":"desc"}
+	     }
+	 }
+
+实现代码
+
+	@RunWith(SpringJUnit4ClassRunner.class)
+	@ContextConfiguration(locations = { "classpath*:spring.xml" })
+	public class BaseTest extends AbstractJUnit4SpringContextTests {
+		@Autowired
+		private JSONDB db;
+		@Test
+		public void testQuery() {
+			String json = db.query(
+				"{\"test\":{\"$columns\":[\"id\",\"username\"],\"age\":{\"$between\":[25,30]},\"username\":{\"$NIN\":[\"lisi\"]},\"$sort\":{\"username\":\"desc\"}}}");
+			String result = db.get(json);
+			System.out.println(json);
+		}
+	}
+
+返回结果
+
+	{
+		"test":[
+			{"id":13,"username":"wangwu"},
+			{"id":16,"username":"mogo"}
+		]
+	}
+
+3,根据分页查询数据
+
+JSON格式
+
+	{
+		"test":{
+			"$join":{
+				"role":{
+					"$refer":{
+						"roleid":"rid"
+						},
+					"$columns":["rolename"]
+					}
+				},
+			"$columns":["id","username"],
+			"$or":[
+				{
+					"age":{"$le":20}
+				},
+				{
+					"age":{"$eq":25}
+				}
+			],
+			"username":{
+					"$NIN":["lisi"]
+				},
+			"$page":[0,10]
+		}
+	}
+
+实现代码
+
+	@RunWith(SpringJUnit4ClassRunner.class)
+	@ContextConfiguration(locations = { "classpath*:spring.xml" })
+	public class BaseTest extends AbstractJUnit4SpringContextTests {
+		@Autowired
+		private JSONDB db;
+		@Test
+		public void testQuery() {
+			String json = db.page(
+				"{\"test\":{\"$join\":{\"role\":{\"$refer\":{\"roleid\":\"rid\"},\"roleid\":\"1;drop table test;\",\"$columns\":[\"rolename\"]}},\"$columns\":[\"id\",\"username\"],\"$or\":[{\"age\":{\"$le\":20}},{\"age\":{\"$eq\":25}}],\"username\":{\"$NIN\":[\"lisi\"]},\"$page\":[0,10]}}");
+			String result = db.get(json);
+			System.out.println(json);
+		}
+	}
+
+返回结果
+
+	{
+		"test":[
+			{
+				"rolename":"teacher",
+				"id":11,
+				"username":"zhangsan"
+			}
+		]
 	}
 
 待添加。。。。。
