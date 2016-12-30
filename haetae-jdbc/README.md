@@ -36,6 +36,7 @@ TODO LIST
 -----------------------------------
 
 参考表结构
+
 TEST表
 
 列名|类型|备注
@@ -148,6 +149,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 	DELETE FROM TEST WHERE (AGE >= 25 OR AGE <= 20) AND USERNAME = 'zhangsan'
 	
 3,JSONDB.update
+
 条件JSON格式
 
 	{
@@ -161,7 +163,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 
 	UPDATE TEST SET AGE=25,CREATETIME='2016-12-27 13:13:13' WHERE USERNAME = 'zhangsan'
 	
-2,JSONDB.query
+4,JSONDB.query
 
 待添加
 
