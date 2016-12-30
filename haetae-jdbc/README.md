@@ -1,5 +1,4 @@
 为什么会有这个项目？（Haetae-JDBC-JSON）
-
 ===================================
 
  目前，WEB项目多数以SQL语句来操作关系型数据，针对目前的RESTFUL+微服务的趋势，为了操作数据格式统一，
@@ -11,7 +10,6 @@
  
 
 特性
-
 -----------------------------------
 
  1，基于JSON格式的操作关系型数据库，目前只在MySQL 5.6上测试通过，其它数据库还末测试
@@ -29,14 +27,12 @@
  7，支持对单表组合复杂条件查询
 
 TODO LIST
-
 -----------------------------------
 
  1，多表关联操作
  
 
 使用指导
-
 -----------------------------------
 
 参考表结构
@@ -105,6 +101,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 	DELETE FROM TEST WHERE ID = 4
 
 
+
 	{
 		"test":{"username":"zhangsan"}
 	}
@@ -112,6 +109,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 
 	DELETE FROM TEST WHERE USERNAME = 'zhangsan'
 	
+
 	
 	{
 		"test":{"username":{"$like":"zhang"}}
@@ -119,6 +117,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 等价于
 
 	DELETE FROM TEST WHERE USERNAME LIKE '%zhang%'
+
 
 
 	{
@@ -129,12 +128,14 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 	DELETE FROM TEST WHERE AGE >= 25 OR AGE <= 20
 
 
+
 	{
 		"test":{"age":{"$between":[25,30]}}
 	}
 等价于
 
 	DELETE FROM TEST WHERE BETWEEN 25 AND 30
+
 
 
 	{
