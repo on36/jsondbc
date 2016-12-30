@@ -396,7 +396,7 @@ JSON格式
 		@Test
 		public void testQuery() {
 			String json = db.page(
-				"{\"test\":{\"$join\":{\"role\":{\"$refer\":{\"roleid\":\"rid\"},\"roleid\":\"1;drop table test;\",\"$columns\":[\"rolename\"]}},\"$columns\":[\"id\",\"username\"],\"$or\":[{\"age\":{\"$le\":20}},{\"age\":{\"$eq\":25}}],\"username\":{\"$NIN\":[\"lisi\"]},\"$page\":[0,10]}}");
+				"{\"test\":{\"$join\":{\"role\":{\"$refer\":{\"roleid\":\"rid\"},\"$columns\":[\"rolename\"]}},\"$columns\":[\"id\",\"username\"],\"$or\":[{\"age\":{\"$le\":20}},{\"age\":{\"$eq\":25}}],\"username\":{\"$NIN\":[\"lisi\"]},\"$page\":[0,10]}}");
 			String result = db.get(json);
 			System.out.println(json);
 		}
