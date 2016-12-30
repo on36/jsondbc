@@ -93,6 +93,8 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 
 2,JSONDB.delete
 
+1
+
 	{
 		"test":{"id":4}
 	}
@@ -100,7 +102,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 
 	DELETE FROM TEST WHERE ID = 4
 
-
+2
 
 	{
 		"test":{"username":"zhangsan"}
@@ -109,7 +111,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 
 	DELETE FROM TEST WHERE USERNAME = 'zhangsan'
 	
-
+3
 	
 	{
 		"test":{"username":{"$like":"zhang"}}
@@ -118,7 +120,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 
 	DELETE FROM TEST WHERE USERNAME LIKE '%zhang%'
 
-
+4
 
 	{
 		"test":{"$or":[{"age":{"$ge",25}},{"age":{"$le",20}}]}
@@ -127,7 +129,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 	
 	DELETE FROM TEST WHERE AGE >= 25 OR AGE <= 20
 
-
+5
 
 	{
 		"test":{"age":{"$between":[25,30]}}
@@ -136,7 +138,7 @@ $join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":
 
 	DELETE FROM TEST WHERE BETWEEN 25 AND 30
 
-
+6
 
 	{
 		"test":{"$or":[{"age":{"$ge",25}},{"age":{"$le",20}}],"username":"zhangsan"}
