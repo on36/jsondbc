@@ -25,7 +25,7 @@ public abstract class ConditionPreparedStatementCreator extends JSONPreparedStat
 
 	protected abstract String tail();
 
-	protected abstract void fill(JSONObject data);
+	protected abstract void fill(String tag, Object data);
 
 	@Override
 	protected void parser(StringBuilder sql, List<Object> argList) {
@@ -64,14 +64,17 @@ public abstract class ConditionPreparedStatementCreator extends JSONPreparedStat
 						values.append(colName.toUpperCase() + " = ? AND ");
 					}
 				}
-				values.delete((values.length() - 5), values.length());
+				if (values.length() > 5)
+					values.delete((values.length() - 5), values.length());
 			} else if (value instanceof JSONArray) {
 				throw new JDBCException("Not support format :" + json);
 			} else {
 				values.append("1=1");
 			}
-			sql.append(" WHERE ");
-			sql.append(values);
+			if (values.length() > 0) {
+				sql.append(" WHERE ");
+				sql.append(values);
+			}
 			sql.append(tail());
 			sql.insert(0, dml(tableName.toUpperCase(), argList));
 		}
@@ -83,10 +86,11 @@ public abstract class ConditionPreparedStatementCreator extends JSONPreparedStat
 		if (object instanceof JSONObject) {
 			JSONObject data = (JSONObject) object;
 			boolean aggregate = false;
-			switch (field) {
-			case "$PAGE":
+			switch (field.toUpperCase()) {
 			case "$AGGRE":
-				fill(data);
+			case "$JOIN":
+			case "$SORT":
+				fill(field, data);
 				aggregate = true;
 				break;
 			default:
@@ -150,6 +154,20 @@ public abstract class ConditionPreparedStatementCreator extends JSONPreparedStat
 			}
 		} else if (object instanceof JSONArray) {
 			JSONArray data = (JSONArray) object;
+
+			boolean findColumn = false;
+			switch (field.toUpperCase()) {
+			case "$PAGE":
+			case "$COLUMNS":
+				fill(field, data);
+				findColumn = true;
+				break;
+			default:
+				break;
+			}
+			if (findColumn)
+				return "";
+
 			sb.append("(");
 			for (Object v : data) {
 				if (v instanceof JSONObject) {
@@ -161,7 +179,7 @@ public abstract class ConditionPreparedStatementCreator extends JSONPreparedStat
 						String tag = (String) dataEntry.getKey();
 						Object jsonValue = dataEntry.getValue();
 						sb.append("(");
-						sb.append(condition(tag, jsonValue, args));
+						sb.append(condition(tag.toUpperCase(), jsonValue, args));
 						sb.append(")");
 					}
 				}
@@ -220,6 +238,7 @@ public abstract class ConditionPreparedStatementCreator extends JSONPreparedStat
 						String.format("Not support format $between : %s, the size of value array shoud be 2",
 								arrayValue.toJSONString()));
 		} else
-			throw new JDBCException(String.format("Not support format $between : %s, value should be array type", value.toString()));
+			throw new JDBCException(
+					String.format("Not support format $between : %s, value should be array type", value.toString()));
 	}
 }

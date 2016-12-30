@@ -22,7 +22,11 @@
 
  4，支持对单表条件操作符，如OR,AND,LIKE,<=,<,>,>=,<>,IN,NOT IN,BETWEEN等
 
- 5，支持对单表组合复杂条件查询
+ 5，支持对单表排序查询操作符，如SORT
+ 
+ 6，支持对单表分页查询操作符，如PAGE
+ 
+ 7，支持对单表组合复杂条件查询
 
 TODO LIST
 
@@ -36,6 +40,7 @@ TODO LIST
 -----------------------------------
 
 参考表结构
+TEST表
 
 列名|类型|备注
 ----|----|----
@@ -43,7 +48,120 @@ ID|INT|主键，自增长
 USERNAME|VARCHAR(64)|用户名
 PASSWORD|VARCHAR(64)|密码
 AGE|INT|年龄
+RID|INT|角色ID
 CREATETIME|DATETIME|创建时间
+
+ROLE
+
+列名|类型|备注
+----|----|----
+ROLEID|INT|主键，自增长
+ROLENAME|VARCHAR(64)|角色名
+
+
+##操作符说明
+
+操作符|说明|使用示例
+----|----|----
+$lt|小于|{"test":{"age":{"$lt":25}}}
+$le|小于等于|{"test":{"age":{"$le":25}}}
+$gt|大于|{"test":{"age":{"$gt":25}}}
+$ge|大于等于|{"test":{"age":{"$ge":25}}}
+$eq|等于|{"test":{"age":{"$eq":25}}}
+$ne|不等于|{"test":{"age":{"$ne":25}}}
+$like|模糊匹配|{"test":{"username":{"$like":"zhang"}}}
+$in|包含|{"test":{"username":{"$in":["zhangsan","lisi"]}}}
+$nin|不包含|{"test":{"username":{"$nin":["zhangsan","lisi"]}}}
+$between|连续区间|{"test":{"age":{"$between":[20,25]}}}
+$and|且|{"test":{"$and":[{"age":{"$le":20}},{"username":"zhangsan"}]}}
+$or|或|{"test":{"$or":[{"age":{"$le":20}},{"username":"zhangsan"}]}}
+$page|分页|{"test":{"$page":[2,10]}}
+$columns|查询字段列表|{"test":{"$columns":["id","username","age"]}}
+$sort|排序|{"test":{"$sort":{"username":"desc"}}}
+$aggre|聚合|{"test":{"$aggre":{"age":"sum"}}}
+$refer|关联映射ID|只能跟$join结合使用,如下
+$join|JOIN关联|{"test":{"$join":{"role":{"$refer":{"roleid":"rid"},"$columns":["rolename"]}},"$and":[{"age":{"$le":20}},{"username":"zhangsan"}]}}
+
+
+
+##示例说明
+
+1,JSONDB.insert
+
+	{
+		"test":{"username":"zhangsan","password":"123456","age":21}
+	}
+等价于
+
+	INSERT INTO TEST(USERNAME,PASSWORD,AGE) VALUES('zhangsan','123456',21);
+
+2,JSONDB.delete
+
+	{
+		"test":{"id":4}
+	}
+等价于
+
+	DELETE FROM TEST WHERE ID = 4
+
+
+	{
+		"test":{"username":"zhangsan"}
+	}
+等价于
+
+	DELETE FROM TEST WHERE USERNAME = 'zhangsan'
+	
+	
+	{
+		"test":{"username":{"$like":"zhang"}}
+	}
+等价于
+
+	DELETE FROM TEST WHERE USERNAME LIKE '%zhang%'
+
+
+	{
+		"test":{"$or":[{"age":{"$ge",25}},{"age":{"$le",20}}]}
+	}
+等价于
+	
+	DELETE FROM TEST WHERE AGE >= 25 OR AGE <= 20
+
+
+	{
+		"test":{"age":{"$between":[25,30]}}
+	}
+等价于
+
+	DELETE FROM TEST WHERE BETWEEN 25 AND 30
+
+
+	{
+		"test":{"$or":[{"age":{"$ge",25}},{"age":{"$le",20}}],"username":"zhangsan"}
+	}
+等价于
+
+	DELETE FROM TEST WHERE (AGE >= 25 OR AGE <= 20) AND USERNAME = 'zhangsan'
+	
+3,JSONDB.update
+条件JSON格式
+
+	{
+		"test":{"username":"zhangsan"}
+	}
+	
+更新JSON格式
+	
+	{"age":25,"createTime":"2016-12-27 13:13:13"}
+等价于
+
+	UPDATE TEST SET AGE=25,CREATETIME='2016-12-27 13:13:13' WHERE USERNAME = 'zhangsan'
+	
+2,JSONDB.query
+
+待添加
+
 
 ####新增操作
 
@@ -63,11 +181,11 @@ JSON格式
 	@ContextConfiguration(locations = { "classpath*:spring.xml" })
 	public class BaseTest extends AbstractJUnit4SpringContextTests {
 		@Autowired
-		private JSONDao dao;
+		private JSONDB db;
 		@Test
 		public void testInsert() {
 			String json = "{\"test\":{\"username\":\"lisi\",\"password\":\"789\",\"createTime\":\"2016-12-27 12:23:23\"}}";
-			int result = dao.insert(json, true);
+			int result = db.insert(json, true);
 			System.out.println(result);
 			assertEquals(true, result > 0);
 		}
@@ -91,11 +209,11 @@ JSON格式
 	@ContextConfiguration(locations = { "classpath*:spring.xml" })
 	public class BaseTest extends AbstractJUnit4SpringContextTests {
 		@Autowired
-		private JSONDao dao;
+		private JSONDB db;
 		@Test
 		public void testDelete() {
 			String json = "{\"test\":{\"id\",5}}";
-			int result = dao.delete(json);
+			int result = db.remove(json);
 			assertEquals(true, result > 0);
 		}
 	}
@@ -115,11 +233,11 @@ JSON格式
 	@ContextConfiguration(locations = { "classpath*:spring.xml" })
 	public class BaseTest extends AbstractJUnit4SpringContextTests {
 		@Autowired
-		private JSONDao dao;
+		private JSONDB db;
 		@Test
 		public void testDelete() {
 			String json = "{\"test\":{\"username\":\"zhangsan\"}}";
-			int result = dao.delete(json);
+			int result = db.remove(json);
 			assertEquals(true, result > 0);
 		}
 	}
@@ -146,12 +264,12 @@ JSON格式
 	@ContextConfiguration(locations = { "classpath*:spring.xml" })
 	public class BaseTest extends AbstractJUnit4SpringContextTests {
 		@Autowired
-		private JSONDao dao;
+		private JSONDB db;
 		@Test
 		public void testUdate() {
 			String json = "{\"test\":{\"username\":\"zhangsan\"}}";
 			String newJson = "{\"createTime\":\"2016-12-27 13:13:13\",\"age\":25}";
-			int result = dao.update(json, newJson);
+			int result = db.update(json, newJson);
 			assertEquals(true, result > 0);
 		}
 	}
@@ -174,11 +292,11 @@ JSON格式
 	@ContextConfiguration(locations = { "classpath*:spring.xml" })
 	public class BaseTest extends AbstractJUnit4SpringContextTests {
 		@Autowired
-		private JSONDao dao;
+		private JSONDB db;
 		@Test
 		public void testQuery() {
 			String json = "{\"test\":{\"id\",5}}";
-			String result = dao.get(json);
+			String result = db.get(json);
 			System.out.println(json);
 		}
 	}

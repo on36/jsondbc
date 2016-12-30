@@ -1,6 +1,10 @@
 package com.on36.haetae.jdbc;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import com.alibaba.fastjson.JSONObject;
 import com.on36.haetae.jdbc.exception.JDBCException;
@@ -9,7 +13,7 @@ import com.on36.haetae.jdbc.exception.JDBCException;
  * @author zhanghr
  * @date 2016年12月27日
  */
-public class AggregatePreparedStatementCreator extends ConditionPreparedStatementCreator {
+public class AggregatePreparedStatementCreator extends QueryPreparedStatementCreator {
 
 	private String aggregate;
 	private String colName;
@@ -38,8 +42,7 @@ public class AggregatePreparedStatementCreator extends ConditionPreparedStatemen
 			sb.append("AVG(").append(colName).append(") AVG");
 			break;
 		default:
-			sb.append("COUNT(*) COUNT");
-			break;
+			throw new JDBCException(String.format("No support aggregate method %s", this.aggregate));
 		}
 		sb.append(" FROM ").append(tableName);
 		return sb.toString();
@@ -51,12 +54,28 @@ public class AggregatePreparedStatementCreator extends ConditionPreparedStatemen
 	}
 
 	@Override
-	protected void fill(JSONObject data) {
-		if (data == null)
+	protected void fill(String tag, Object object) {
+		if (object == null)
 			return;
 
-		this.aggregate = data.getString("aggregate");
-		this.colName = data.getString("aggregate");
+		if (object instanceof JSONObject) {
+			switch (tag) {
+			case "$AGGRE":
+				JSONObject data = (JSONObject) object;
+				Set<Entry<String, Object>> dataSet = data.entrySet();
+				Iterator<Entry<String, Object>> dataIter = dataSet.iterator();
+				while (dataIter.hasNext()) {
+					Map.Entry<String, Object> dataEntry = (Map.Entry<String, Object>) dataIter.next();
+					this.colName = (String) dataEntry.getKey().toUpperCase();
+					this.aggregate = dataEntry.getValue().toString();
+				}
+				return;
+			default:
+				break;
+			}
+		}
+
+		super.fill(tag, object);
 	}
 
 }

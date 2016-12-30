@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class JSONDao extends AbstractDao {
+public class JSONDB extends AbstractDB {
 	/**
 	 * 分页查询,无分页信息时只取前100条数据.
 	 * 
@@ -20,9 +20,8 @@ public class JSONDao extends AbstractDao {
 	 *            只查询指定字段
 	 * @return
 	 */
-	public String page(String json, String... columns) {
-		return getJdbcTemplate().query(new PageQueryPreparedStatementCreator(json, columns),
-				new JSONResultSetExtractor());
+	public String page(String json) {
+		return getJdbcTemplate().query(new PageQueryPreparedStatementCreator(json), new JSONResultSetExtractor());
 	}
 
 	/**
@@ -34,8 +33,8 @@ public class JSONDao extends AbstractDao {
 	 *            只查询指定字段
 	 * @return
 	 */
-	public String query(String json, String... columns) {
-		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json, columns), new JSONResultSetExtractor());
+	public String query(String json) {
+		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json), new JSONResultSetExtractor());
 	}
 
 	/**
@@ -47,9 +46,8 @@ public class JSONDao extends AbstractDao {
 	 *            只查询指定字段
 	 * @return
 	 */
-	public String get(String json, String... columns) {
-		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json, columns),
-				new JSONResultSetExtractor(true));
+	public String get(String json) {
+		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json), new JSONResultSetExtractor(true));
 	}
 
 	/**
@@ -61,6 +59,17 @@ public class JSONDao extends AbstractDao {
 	 */
 	public String aggregate(String json) {
 		return getJdbcTemplate().query(new AggregatePreparedStatementCreator(json), new JSONResultSetExtractor(true));
+	}
+
+	/**
+	 * 添加操作.
+	 * 
+	 * @param json
+	 *            添加的JSON数据
+	 * @return 返回当前影响的行数
+	 */
+	public int insert(String json) {
+		return insert(json, false);
 	}
 
 	/**
@@ -88,7 +97,7 @@ public class JSONDao extends AbstractDao {
 	 *            删除的JSON数据
 	 * @return 返回当前影响的行数
 	 */
-	public int delete(String json) {
+	public int remove(String json) {
 		return getJdbcTemplate().update(new DeletePreparedStatementCreator(json));
 	}
 
