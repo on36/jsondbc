@@ -160,7 +160,7 @@ public class QueryPreparedStatementCreator extends ConditionPreparedStatementCre
 						default:
 							sb.append("B." + ctag);
 							sb.append(" = ");
-							sb.append((jsonValue instanceof String) ? String.format("'%s'", jsonValue)
+							sb.append((jsonValue instanceof String) ? String.format("'%s'", jsonValue.toString().toUpperCase())
 									: jsonValue.toString());
 							sb.append(" AND ");
 							break;

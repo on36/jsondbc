@@ -21,7 +21,7 @@ public class JSONDB extends AbstractDB {
 	 * @return
 	 */
 	public String page(String json) {
-		return getJdbcTemplate().query(new PageQueryPreparedStatementCreator(json), new JSONResultSetExtractor());
+		return getJdbcTemplate().query(new PageQueryPreparedStatementCreator(json), new JSONResultSetExtractor(this));
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class JSONDB extends AbstractDB {
 	 * @return
 	 */
 	public String query(String json) {
-		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json), new JSONResultSetExtractor());
+		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json), new JSONResultSetExtractor(this));
 	}
 
 	/**
@@ -47,7 +47,19 @@ public class JSONDB extends AbstractDB {
 	 * @return
 	 */
 	public String get(String json) {
-		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json), new JSONResultSetExtractor(true));
+		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json), new JSONResultSetExtractor(this,1));
+	}
+	/**
+	 * KV查询操作 ，只返回数据KV对.
+	 * 
+	 * @param json
+	 *            查询的JSON数据
+	 * @param columns
+	 *            只查询指定字段
+	 * @return
+	 */
+	public String kv(String json) {
+		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json), new JSONResultSetExtractor(this,3));
 	}
 
 	/**
@@ -58,7 +70,7 @@ public class JSONDB extends AbstractDB {
 	 * @return
 	 */
 	public String aggregate(String json) {
-		return getJdbcTemplate().query(new AggregatePreparedStatementCreator(json), new JSONResultSetExtractor(true));
+		return getJdbcTemplate().query(new AggregatePreparedStatementCreator(json), new JSONResultSetExtractor(this,1));
 	}
 
 	/**
