@@ -50,7 +50,7 @@ public class JSONDB extends AbstractDB {
 		return getJdbcTemplate().query(new QueryPreparedStatementCreator(json), new JSONResultSetExtractor(this,1));
 	}
 	/**
-	 * KV查询操作 ，只返回数据KV对.
+	 * 指定两列的KV查询操作 ，只返回数据KV对JSON; 第一列为key,第二列为value.
 	 * 
 	 * @param json
 	 *            查询的JSON数据
