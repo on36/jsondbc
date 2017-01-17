@@ -309,13 +309,11 @@ JSON格式
 返回结果
 
 	{
-		"test":{
-			"password":"789",
-			"createtime":"2016-12-08 13:13:13",
-			"id":5,
-			"age":18,
-			"username":"zhangsan"
-		}
+		"password":"789",
+		"createtime":"2016-12-08 13:13:13",
+		"id":5,
+		"age":18,
+		"username":"zhangsan"
 	}
 	
 2,根据其它条件查询数据
@@ -349,12 +347,10 @@ JSON格式
 
 返回结果
 
-	{
-		"test":[
-			{"id":13,"username":"wangwu"},
-			{"id":16,"username":"mogo"}
-		]
-	}
+	[
+		{"id":13,"username":"wangwu"},
+		{"id":16,"username":"mogo"}
+	]
 
 3,根据分页查询数据
 
@@ -404,15 +400,13 @@ JSON格式
 
 返回结果
 
-	{
-		"test":[
-			{
-				"rolename":"teacher",
-				"id":11,
-				"username":"zhangsan"
-			}
-		]
-	}
+	[
+		{
+			"rolename":"teacher",
+			"id":11,
+			"username":"zhangsan"
+		}
+	]
 
 待添加。。。。。
 

@@ -149,12 +149,5 @@ public class JSONResultSetExtractor implements ResultSetExtractor<String> {
 
 	private void init() {
 		assMap = new HashMap<String, JSONObject>();
-		JSONArray ja = JSON.parseArray(db.query("{\"h_association\":{}}"));
-		for (Object obj : ja) {
-			JSONObject entity = (JSONObject) obj;
-			String tableName = entity.getString("tabel_name");
-			String colName = entity.getString("column_name");
-			assMap.put(tableName + colName, entity);
-		}
 	}
 }
