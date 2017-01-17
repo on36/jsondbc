@@ -340,7 +340,6 @@ JSON格式
 		public void testQuery() {
 			String json = db.query(
 				"{\"test\":{\"$columns\":[\"id\",\"username\"],\"age\":{\"$between\":[25,30]},\"username\":{\"$NIN\":[\"lisi\"]},\"$sort\":{\"username\":\"desc\"}}}");
-			String result = db.get(json);
 			System.out.println(json);
 		}
 	}
